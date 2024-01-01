@@ -12,6 +12,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+
 def get_from_cache(*, key):
     r = get_redis_connection()
     value = r.get(key)
