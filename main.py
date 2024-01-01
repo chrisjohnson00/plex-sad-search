@@ -30,7 +30,8 @@ def horror_movies():
         # exclude movies added in the last 90 days
         if movie.addedAt < ninety_days_ago:
             print(
-                f"Movie: {movie.title}, File path: {sanitize_file_path(movie.media[0].parts[0].file)}, Rating Key: {movie.ratingKey}")
+                f"Movie: {movie.title}, File path: {sanitize_file_path(movie.media[0].parts[0].file)}, "
+                "Rating Key: {movie.ratingKey}")
             size += movie.media[0].parts[0].size  # Increment size with the size of the movie
             store_movie(movie=movie, search_key=inspect.currentframe().f_code.co_name)
     size_gb = size / (1024 ** 3)  # convert size to gigabytes
