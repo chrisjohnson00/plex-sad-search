@@ -140,7 +140,7 @@ jobs:
           # publish
           push: '${{ steps.prep.outputs.push }}'
           # tags determined by prep step
-          tags: 'chrisjohnson00/${{ nsteps.prep.outputs.gh-repo-name }}:${{ steps.prep.outputs.docker-tag }}'
+          tags: 'chrisjohnson00/${{ steps.prep.outputs.gh-repo-name }}:${{ steps.prep.outputs.docker-tag }}'
           cache-from: 'type=local,src=/tmp/.buildx-cache'
           cache-to: 'type=local,dest=/tmp/.buildx-cache'
           labels: |
