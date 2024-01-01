@@ -2,8 +2,8 @@ name: 'CI'
 
 on:
   push:
-    branches: ['**']
-    tags: ['**']
+    branches: [ '**' ]
+    tags: [ '**' ]
 
 jobs:
   lint:
@@ -22,31 +22,31 @@ jobs:
           pip install -r requirements.txt
       - name: 'Flake8 :allthethings:'
         run: 'python -m flake8 --max-line-length 120'
-#  test:
-#    name: 'Test'
-#    runs-on: 'ubuntu-20.04'
-#    steps:
-#      - uses: 'actions/checkout@v3'
-#      - uses: 'actions/setup-python@v4'
-#        with:
-#          python-version: '3.11'
-#      - name: 'Install dependencies'
-#        run: |
-#          echo "Installing CI requirements"
-#          pip install --upgrade --user pip pytest coverage pyfakefs
-#          echo "Installing project requirements"
-#          pip install -r requirements.txt
-#      - name: 'Run tests'
-#        run: 'python -m coverage run --branch -m pytest'
-#      - name: 'Display coverage report'
-#        run: |
-#          python -m coverage report --fail-under=80 \
-#          --omit="*/.local/*","*/tests/test_*" -m
+  #  test:
+  #    name: 'Test'
+  #    runs-on: 'ubuntu-20.04'
+  #    steps:
+  #      - uses: 'actions/checkout@v3'
+  #      - uses: 'actions/setup-python@v4'
+  #        with:
+  #          python-version: '3.11'
+  #      - name: 'Install dependencies'
+  #        run: |
+  #          echo "Installing CI requirements"
+  #          pip install --upgrade --user pip pytest coverage pyfakefs
+  #          echo "Installing project requirements"
+  #          pip install -r requirements.txt
+  #      - name: 'Run tests'
+  #        run: 'python -m coverage run --branch -m pytest'
+  #      - name: 'Display coverage report'
+  #        run: |
+  #          python -m coverage report --fail-under=80 \
+  #          --omit="*/.local/*","*/tests/test_*" -m
   container_build:
     name: 'Build and Push Docker Container'
     runs-on: 'ubuntu-20.04'
-#    needs: ['lint', 'test']
-    needs: ['lint']
+    #    needs: ['lint', 'test']
+    needs: [ 'lint' ]
     steps:
       - uses: 'actions/checkout@v3'
       - name: 'Get calculated next version based on commit history'
