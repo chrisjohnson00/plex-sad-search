@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: 'Lint'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: 'actions/checkout@v3'
       - uses: 'actions/setup-python@v4'
@@ -24,7 +24,7 @@ jobs:
         run: 'python -m flake8 --max-line-length 120'
   #  test:
   #    name: 'Test'
-  #    runs-on: 'ubuntu-20.04'
+  #    runs-on: 'ubuntu-latest'
   #    steps:
   #      - uses: 'actions/checkout@v3'
   #      - uses: 'actions/setup-python@v4'
@@ -44,7 +44,7 @@ jobs:
   #          --omit="*/.local/*","*/tests/test_*" -m
   container_build:
     name: 'Build and Push Docker Container'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-latest'
     #    needs: ['lint', 'test']
     needs: [ 'lint' ]
     steps:
@@ -120,7 +120,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
   actionslint:
     name: 'Actions Yaml Lint'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
