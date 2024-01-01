@@ -47,5 +47,5 @@ def get_config():
     r = requests.get(url, headers=headers)
     response_json = json.loads(r.text)
     logger.debug(f"Response json: {response_json}")
-    save_to_cache(key=url, data=response_json, ttl=28800)
+    save_to_cache(key=url, data=response_json, ttl=604800)
     return response_json
