@@ -124,14 +124,20 @@ jobs:
   actionslint:
     name: 'Actions Yaml Lint'
     runs-on: 'ubuntu-latest'
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+    env:
+      VALIDATE_YAML: true
+      VALIDATE_GITHUB_ACTIONS: true
     steps:
-      - name: 'Checkout'
-        uses: 'actions/checkout@v3'
-      - name: 'Actions Yaml Lint'
-        uses: 'karancode/yamllint-github-action@v2.1.1'
-        with:
-          yamllint_file_or_dir: '.github/workflows'
-          yamllint_comment: 'true'
-          yamllint_config_datapath: '{"extends":"default","rules":{"line-length":{"max":360,"level":"warning"},"truthy":{"check-keys":false},"document-start":{"present":false}}}'
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Super-linter
+        uses: super-linter/super-linter@slim-v5.7.2  # x-release-please-version
         env:
-          GITHUB_ACCESS_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          DEFAULT_BRANCH: main
+          # To report GitHub Actions status checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
