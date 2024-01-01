@@ -85,7 +85,7 @@ jobs:
               DOCKER_TAG=latest
             else
               BRANCH=${BRANCH#deploy-}  # Remove deploy- prefix, if any
-              DOCKER_TAG="${BRANCH//\//-}-${GITHUB_RUN_ID}"
+              DOCKER_TAG=${{ steps.calculated-next-version.outputs.new_tag }}
             fi
 
             # Branch build; let the stack name use the normal convention.
