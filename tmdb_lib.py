@@ -20,7 +20,7 @@ def search_movie_by_query_and_year(*, query: str, year: int):
     headers = {
         "Authorization": f"Bearer {api_access_token}",
     }
-    url = f"https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&query={quote(query)}&year={year}"
+    url = f"https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&query={quote(query)}&year={year}"  # noqa: E501
     cached = get_from_cache(key=url)
     if cached:
         logger.debug(f"TMDB Cache hit for {query} ({year})")
@@ -41,9 +41,9 @@ def get_config():
     url = "https://api.themoviedb.org/3/configuration"
     cached = get_from_cache(key=url)
     if cached:
-        logger.debug(f"TMDB Cache hit for /configuration)")
+        logger.debug("TMDB Cache hit for /configuration)")
         return json.loads(cached)
-    logger.debug(f"TMDB Cache miss for /configuration, requesting from TMDB")
+    logger.debug("TMDB Cache miss for /configuration, requesting from TMDB")
     r = requests.get(url, headers=headers)
     response_json = json.loads(r.text)
     logger.debug(f"Response json: {response_json}")
