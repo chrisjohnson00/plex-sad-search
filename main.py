@@ -41,7 +41,8 @@ def horror_movies(*, search_keys, results_to_store):
                 f"Rating Key: '{movie.ratingKey}'")
             size += movie.media[0].parts[0].size  # Increment size with the size of the movie
             count += 1
-            store_movie(movie=movie, search_key=inspect.currentframe().f_code.co_name, results_to_store=results_to_store)
+            store_movie(movie=movie, search_key=inspect.currentframe().f_code.co_name,
+                        results_to_store=results_to_store)
     size_gb = size / (1024 ** 3)  # convert size to gigabytes
     logger.info(f"Total size of {inspect.currentframe().f_code.co_name}: {size_gb}GB, {count} movies")
     search_keys.append(inspect.currentframe().f_code.co_name)
