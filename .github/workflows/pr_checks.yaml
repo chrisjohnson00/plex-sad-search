@@ -61,7 +61,7 @@ jobs:
           PR_BODY: '${{ github.event.pull_request.body }}'
       - name: Add Breaking Label
         if: steps.check-breaking.outputs.grep_exit_code == 0
-        uses: actions/github-script@v6.4.1
+        uses: actions/github-script@v7.0.1
         with:
           # context.issue.number will return either an issue number or a PR number:
           # https://github.com/actions/toolkit/blob/92695f58daf7b460a9ae2a4682d8e65a5dea7bc8/packages/github/src/context.ts#L60
