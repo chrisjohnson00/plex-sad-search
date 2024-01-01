@@ -37,13 +37,11 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./release.md
-      - name: Create a GitHub release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Create a GitHub release'
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          release_name: ${{ steps.tag_version.outputs.new_tag }}
+          tag: '${{ steps.tag_version.outputs.new_tag }}'
+          generateReleaseNotes: true
           body: ${{ steps.changelog.outputs.content }}
       - name: Generate changelog
         uses: charmixer/auto-changelog-action@v1.4
