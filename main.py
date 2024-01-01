@@ -6,6 +6,7 @@ import logging
 from plexapi.server import PlexServer
 from plexapi.video import Movie
 from redis_lib import save_to_cache
+from tmdb_lib import search_movie_by_query_and_year
 
 
 def main():
@@ -36,9 +37,8 @@ def horror_movies(*, search_keys, results_to_store):
     for movie in horror_movie_results:
         # exclude movies added in the last 90 days
         if movie.addedAt < ninety_days_ago:
-            logger.debug(
-                f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}', "
-                f"Rating Key: '{movie.ratingKey}'")
+            logger.info(
+                f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}'")
             size += movie.media[0].parts[0].size  # Increment size with the size of the movie
             count += 1
             store_movie(movie=movie, search_key=inspect.currentframe().f_code.co_name,
@@ -50,8 +50,9 @@ def horror_movies(*, search_keys, results_to_store):
 
 
 def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
-    movie_dict = {"title": movie.title, "file_path": sanitize_file_path(movie.media[0].parts[0].file),
-                  "id": movie.ratingKey, "size_bytes": movie.media[0].parts[0].size}
+    tmdb_results = search_movie_by_query_and_year(query=movie.title, year=movie.year)
+    movie_dict = {"file_path": sanitize_file_path(movie.media[0].parts[0].file), "id": movie.ratingKey,
+                  "size_bytes": movie.media[0].parts[0].size, "tmdb_results": tmdb_results}
     if search_key in results_to_store:
         results_to_store[search_key].append(movie_dict)
     else:
@@ -78,14 +79,13 @@ def get_plex_client():
     return plex
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     logger = logging.getLogger("sad")
     logger.setLevel(logging.DEBUG)
     logger.handlers = []
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     main()

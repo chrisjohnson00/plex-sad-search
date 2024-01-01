@@ -4,7 +4,13 @@ import redis
 import logging
 
 logger = logging.getLogger("redis_lib")
-
+logger.setLevel(os.environ.get("REDIS_LIB_LOG_LEVEL", "INFO"))
+logger.handlers = []
+console_handler = logging.StreamHandler()
+console_handler.setLevel(os.environ.get("REDIS_LIB_LOG_LEVEL", "INFO"))
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 def get_from_cache(*, key):
     r = get_redis_connection()
