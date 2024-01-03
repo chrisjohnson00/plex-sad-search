@@ -5,17 +5,15 @@ import logging
 
 from plexapi.server import PlexServer
 from plexapi.video import Movie
-from redis_lib import save_to_cache
-from tmdb_lib import search_movie_by_query_and_year, get_config
-
+import sad_libraries.redis as sad_redis
+import sad_libraries.tmdb as sad_tmdb
 
 def main():
     search_keys = []
     results_to_store = {}
-    get_config()
     search_keys, results_to_store = horror_movies(search_keys=search_keys, results_to_store=results_to_store)
-    save_to_cache(key='sad_search_keys', data=search_keys)
-    save_to_cache(key='sad_results', data=results_to_store)
+    sad_redis.save_to_cache(key='sad_search_keys', data=search_keys)
+    sad_redis.save_to_cache(key='sad_results', data=results_to_store)
 
 
 def horror_movies(*, search_keys, results_to_store):
@@ -51,12 +49,13 @@ def horror_movies(*, search_keys, results_to_store):
 
 
 def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
-    tmdb_results = search_movie_by_query_and_year(query=movie.title, year=movie.year)
+    tmdb_results = sad_tmdb.search_movie_by_query_and_year(query=movie.title, year=movie.year)
     # tmdb_results comes back with a dict of this format:
     # {'page': 1, 'results': [], 'total_pages': 1, 'total_results': 0}
     if tmdb_results['total_results'] > 0:
         movie_dict = {"file_path": sanitize_file_path(movie.media[0].parts[0].file), "id": movie.ratingKey,
-                      "size_bytes": movie.media[0].parts[0].size, "tmdb_results": tmdb_results['results'][0]}
+                      "size_bytes": movie.media[0].parts[0].size, "tmdb_results": tmdb_results['results'][0],
+                      "audience_rating": movie.audienceRating}
         if search_key in results_to_store:
             results_to_store[search_key].append(movie_dict)
         else:
