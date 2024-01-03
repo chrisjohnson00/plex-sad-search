@@ -2,5 +2,9 @@ certifi==2023.11.17
 charset-normalizer==3.3.2
 idna==3.6
 PlexAPI==4.15.7
+redis==5.0.1
 requests==2.31.0
+sad_libraries @ git+https://github.com/chrisjohnson00/plex-sad-libraries.git@initial-version
+setuptools==69.0.2
 urllib3==2.1.0
+wheel==0.42.0

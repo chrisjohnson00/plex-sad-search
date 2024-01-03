@@ -7,13 +7,17 @@ on:
     tags:
       - '**'
 
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: 'Lint'
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: 'actions/checkout@v3'
-      - uses: 'actions/setup-python@v4'
+      - uses: 'actions/checkout@v4'
+      - uses: 'actions/setup-python@v5'
         with:
           python-version: '3.11'
       - name: 'Install dependencies'
@@ -28,8 +32,8 @@ jobs:
   #    name: 'Test'
   #    runs-on: 'ubuntu-latest'
   #    steps:
-  #      - uses: 'actions/checkout@v3'
-  #      - uses: 'actions/setup-python@v4'
+  #      - uses: 'actions/checkout@v4'
+  #      - uses: 'actions/setup-python@v5'
   #        with:
   #          python-version: '3.11'
   #      - name: 'Install dependencies'
@@ -51,7 +55,7 @@ jobs:
     needs:
       - 'lint'
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
       - name: 'Get calculated next version based on commit history'
         id: 'calculated-next-version'
         uses: 'mathieudutour/github-tag-action@v6.1'
@@ -117,7 +121,7 @@ jobs:
       - name: 'Setup Docker Buildx'
         uses: 'docker/setup-buildx-action@v3'
       - name: 'Cache Docker layers'
-        uses: 'actions/cache@v3.3.1'
+        uses: 'actions/cache@v3.3.2'
         with:
           path: '/tmp/.buildx-cache'
           key: '${{ runner.os }}-buildx-${{ steps.prep.outputs.branch }}-${{ github.sha }}'

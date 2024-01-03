@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - PLEX_URL=${PLEX_URL}
+      - PLEX_TOKEN=${PLEX_TOKEN}
+    ports:
+      - "5000:5000"
+    volumes:
+    - .:/usr/src/app
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
