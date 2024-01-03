@@ -4,7 +4,7 @@ idna==3.6
 PlexAPI==4.15.7
 redis==5.0.1
 requests==2.31.0
-sad_libraries @ git+https://github.com/chrisjohnson00/plex-sad-libraries.git@initial-version
+sad_libraries @ git+https://github.com/chrisjohnson00/plex-sad-libraries.git@a619a865e8171e2f797c2b51dad76595747ef52d
 setuptools==69.0.2
 urllib3==2.1.0
 wheel==0.42.0
