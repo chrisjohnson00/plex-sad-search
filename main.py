@@ -8,6 +8,7 @@ from plexapi.video import Movie
 import sad_libraries.redis as sad_redis
 import sad_libraries.tmdb as sad_tmdb
 
+
 def main():
     search_keys = []
     results_to_store = {}
