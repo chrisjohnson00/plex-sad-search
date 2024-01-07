@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.3.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.3.0) (2024-01-07)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.2.1...v0.3.0)
+
+**Implemented enhancements:**
+
+- feat: trigger searches from a message in pulsar [\#17](https://github.com/chrisjohnson00/plex-sad-search/pull/17) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v0.2.1](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.2.1) (2024-01-03)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.2.0...v0.2.1)
