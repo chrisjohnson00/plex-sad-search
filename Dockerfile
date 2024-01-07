@@ -28,4 +28,4 @@ COPY --from=build /venv /venv
 
 COPY . .
 
-CMD [ "python", "./main.py" ]
+ENTRYPOINT [ "python", "./main.py" ]
