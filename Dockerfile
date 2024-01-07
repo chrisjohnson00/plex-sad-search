@@ -1,5 +1,5 @@
 # Stage 1: Build image
-FROM python:3.12-slim AS build
+FROM python:3.10-slim AS build
 
 # Install dependencies needed for building (e.g., git)
 RUN apt-get update && \
@@ -17,7 +17,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Final image
-FROM python:3.12-slim
+FROM python:3.10-slim
 
 WORKDIR /usr/src/app
 
