@@ -2,6 +2,7 @@ import argparse
 import inspect
 import json
 import os
+import traceback
 from datetime import datetime, timedelta
 
 import pulsar
@@ -31,7 +32,8 @@ def main():
         except Exception as e:  # noqa: E722
             # Message failed to be processed
             consumer.negative_acknowledge(msg)
-            logger.error("A message could not be processed", extra={'message_body': message_body, 'exception': e})
+            logger.error("A message could not be processed",
+                         extra={'message_body': message_body, 'exception': e, 'stack_trace': traceback.format_exc()})
 
 
 def process_message(message_body):
@@ -105,7 +107,7 @@ def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
     # tmdb_results comes back with a dict of this format:
     # {'page': 1, 'results': [], 'total_pages': 1, 'total_results': 0}
     if tmdb_results['total_results'] > 0:
-        movie_dict = {"file_path": sanitize_file_path(movie.media[0].parts[0].file), "id": movie.guid,
+        movie_dict = {"file_path": sanitize_file_path(movie.media[0].parts[0].file), "id": movie.ratingKey,
                       "size_bytes": movie.media[0].parts[0].size, "tmdb_results": tmdb_results['results'][0],
                       "audience_rating": movie.audienceRating}
         if search_key in results_to_store:
