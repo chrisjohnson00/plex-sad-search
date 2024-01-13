@@ -169,7 +169,7 @@ if __name__ == '__main__':
     # Logging setup
     kwargs = {}
     formatter = gogo.formatters.structured_formatter
-    logger = gogo.Gogo('sad', low_formatter=formatter, low_level=os.getenv("SAD_LOG_LEVEL", "INFO")).get_logger(
+    logger = gogo.Gogo('sad.search', low_formatter=formatter, low_level=os.getenv("SAD_LOG_LEVEL", "INFO")).get_logger(
         **kwargs)
 
     # Call main or send_all_refresh based on --refresh argument
