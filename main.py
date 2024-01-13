@@ -75,6 +75,9 @@ def horror_movies(*, search_keys: list, results_to_store: dict):
     :return:
     """
     search_key = inspect.currentframe().f_code.co_name
+    # empty the results_to_store dict for this search key
+    if search_key in results_to_store:
+        results_to_store[search_key] = []
     # Fetch movie library
     movies = get_movie_library()
     ninety_days_ago = datetime.now() - timedelta(days=90)
