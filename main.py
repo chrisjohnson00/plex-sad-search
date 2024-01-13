@@ -80,28 +80,19 @@ def horror_movies(*, search_keys: list, results_to_store: dict):
         results_to_store[search_key] = []
     # Fetch movie library
     movies = get_movie_library()
-    ninety_days_ago = datetime.now() - timedelta(days=90)
-    # Filter movies for genre "Horror" and check if they're unwatched, and added to the library more than
-    # 90 days ago
-    horror_movie_results = [
-        movie
-        for movie in movies.search(unwatched=True)
-        if any(genre.tag.lower() == "horror" for genre in
-               movie.genres) and movie.addedAt < ninety_days_ago
-    ]
+    ninety_days_ago: datetime = datetime.now() - timedelta(days=90)
     size = 0
     count = 0
-    # Print unwatched horror movies and calculate their total size
-    for movie in horror_movie_results:
-        # only include movies with an audience rating less than 80%
-        if movie.audienceRating and movie.audienceRating < 8:
-            logger.info(
-                f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}'")
-            size += movie.media[0].parts[0].size  # Increment size with the size of the movie
-            count += 1
-            store_movie(movie=movie, search_key=search_key, results_to_store=results_to_store)
-        else:
-            logger.debug(f"Skipping '{movie.title}' because it has an audience rating of '{movie.audienceRating}'")
+    # Unwatched horror movies which were added more than 90 days ago and have an audience rating less than 8
+    for movie in movies.search(
+            filters={'unwatched': True, 'genre': 'horror', 'addedAt<<': ninety_days_ago.strftime("%Y-%m-%d"),
+                     'audienceRating<<': 8}):
+        logger.info(
+            f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}', "
+            f"AddedAt: '{movie.addedAt}', Audience Rating: '{movie.audienceRating}'")
+        size += movie.media[0].parts[0].size  # Increment size with the size of the movie
+        count += 1
+        store_movie(movie=movie, search_key=search_key, results_to_store=results_to_store)
     size_gb = size / (1024 ** 3)  # convert size to gigabytes
     logger.info(f"Total size of {search_key}: {size_gb}GB, {count} movies")
     if search_key not in search_keys:
