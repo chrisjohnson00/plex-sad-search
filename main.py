@@ -2,6 +2,7 @@ import argparse
 import inspect
 import json
 import os
+import traceback
 from datetime import datetime, timedelta
 
 import pulsar
@@ -31,7 +32,8 @@ def main():
         except Exception as e:  # noqa: E722
             # Message failed to be processed
             consumer.negative_acknowledge(msg)
-            logger.error("A message could not be processed", extra={'message_body': message_body, 'exception': e})
+            logger.error("A message could not be processed",
+                         extra={'message_body': message_body, 'exception': e, 'stack_trace': traceback.format_exc()})
 
 
 def process_message(message_body):
@@ -40,8 +42,7 @@ def process_message(message_body):
     # message_body will be a list of search keys to execute, if a search key exists, that function will be
     # executed, if "all" is in the list, all will be executed.
     if "all" in message_body:
-        search_keys, results_to_store = horror_movies(search_keys=search_keys,
-                                                      results_to_store=results_to_store)
+        search_keys, results_to_store = horror_movies(search_keys=search_keys, results_to_store=results_to_store)
     else:
         for search_key in message_body:
             if search_key == "horror_movies":
@@ -75,27 +76,24 @@ def horror_movies(*, search_keys: list, results_to_store: dict):
     :return:
     """
     search_key = inspect.currentframe().f_code.co_name
+    # empty the results_to_store dict for this search key
+    if search_key in results_to_store:
+        results_to_store[search_key] = []
     # Fetch movie library
     movies = get_movie_library()
-    ninety_days_ago = datetime.now() - timedelta(days=90)
-    # Filter movies for genre "Horror" and check if they're unwatched
-    horror_movie_results = [
-        movie
-        for movie in movies.search(unwatched=True)
-        if any(genre.tag.lower() == "horror" for genre in movie.genres)
-    ]
+    ninety_days_ago: datetime = datetime.now() - timedelta(days=90)
     size = 0
     count = 0
-    # Print unwatched horror movies and calculate their total size
-    for movie in horror_movie_results:
-        # exclude movies added in the last 90 days
-        if movie.addedAt < ninety_days_ago:
-            logger.info(
-                f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}'")
-            size += movie.media[0].parts[0].size  # Increment size with the size of the movie
-            count += 1
-            store_movie(movie=movie, search_key=search_key,
-                        results_to_store=results_to_store)
+    # Unwatched horror movies which were added more than 90 days ago and have an audience rating less than 8
+    for movie in movies.search(
+            filters={'unwatched': True, 'genre': 'horror', 'addedAt<<': ninety_days_ago.strftime("%Y-%m-%d"),
+                     'audienceRating<<': 7.5}):
+        logger.info(
+            f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}', "
+            f"AddedAt: '{movie.addedAt}', Audience Rating: '{movie.audienceRating}'")
+        size += movie.media[0].parts[0].size  # Increment size with the size of the movie
+        count += 1
+        store_movie(movie=movie, search_key=search_key, results_to_store=results_to_store)
     size_gb = size / (1024 ** 3)  # convert size to gigabytes
     logger.info(f"Total size of {search_key}: {size_gb}GB, {count} movies")
     if search_key not in search_keys:
@@ -110,7 +108,7 @@ def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
     if tmdb_results['total_results'] > 0:
         movie_dict = {"file_path": sanitize_file_path(movie.media[0].parts[0].file), "id": movie.ratingKey,
                       "size_bytes": movie.media[0].parts[0].size, "tmdb_results": tmdb_results['results'][0],
-                      "audience_rating": movie.audienceRating}
+                      "audience_rating": movie.audienceRating, "roles": [str(role) for role in movie.roles]}
         if search_key in results_to_store:
             results_to_store[search_key].append(movie_dict)
         else:
@@ -169,7 +167,7 @@ if __name__ == '__main__':
     # Logging setup
     kwargs = {}
     formatter = gogo.formatters.structured_formatter
-    logger = gogo.Gogo('sad', low_formatter=formatter, low_level=os.getenv("SAD_LOG_LEVEL", "INFO")).get_logger(
+    logger = gogo.Gogo('sad.search', low_formatter=formatter, low_level=os.getenv("SAD_LOG_LEVEL", "INFO")).get_logger(
         **kwargs)
 
     # Call main or send_all_refresh based on --refresh argument
