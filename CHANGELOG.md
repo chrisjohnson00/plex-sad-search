@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.4.1](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.4.1) (2024-01-14)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.4.0...v0.4.1)
+
+**Merged pull requests:**
+
+- ci: skip docker hub login when no push is needed [\#21](https://github.com/chrisjohnson00/plex-sad-search/pull/21) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v0.4.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.4.0) (2024-01-14)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.3.0...v0.4.0)
