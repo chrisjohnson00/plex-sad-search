@@ -9,7 +9,6 @@ import pulsar
 import pygogo as gogo
 import sad_libraries.redis as sad_redis
 import sad_libraries.tmdb as sad_tmdb
-from plexapi.media import Role
 from plexapi.server import PlexServer
 from plexapi.video import Movie
 
