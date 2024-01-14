@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.4.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.4.0) (2024-01-14)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.3.0...v0.4.0)
+
+**Implemented enhancements:**
+
+- feat: search quality and UX improvements [\#20](https://github.com/chrisjohnson00/plex-sad-search/pull/20) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v0.3.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.3.0) (2024-01-07)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.2.1...v0.3.0)
