@@ -129,6 +129,7 @@ jobs:
             ${{ runner.os }}-buildx-
             ${{ runner.os }}-buildx-${{ steps.prep.outputs.branch }}
       - name: 'Login to DockerHub'
+        if: steps.prep.outputs.push == 'true'
         uses: 'docker/login-action@v3'
         with:
           username: 'chrisjohnson00'
