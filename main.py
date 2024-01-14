@@ -9,6 +9,7 @@ import pulsar
 import pygogo as gogo
 import sad_libraries.redis as sad_redis
 import sad_libraries.tmdb as sad_tmdb
+from plexapi.media import Role
 from plexapi.server import PlexServer
 from plexapi.video import Movie
 
@@ -42,8 +43,7 @@ def process_message(message_body):
     # message_body will be a list of search keys to execute, if a search key exists, that function will be
     # executed, if "all" is in the list, all will be executed.
     if "all" in message_body:
-        search_keys, results_to_store = horror_movies(search_keys=search_keys,
-                                                      results_to_store=results_to_store)
+        search_keys, results_to_store = horror_movies(search_keys=search_keys, results_to_store=results_to_store)
     else:
         for search_key in message_body:
             if search_key == "horror_movies":
@@ -88,7 +88,7 @@ def horror_movies(*, search_keys: list, results_to_store: dict):
     # Unwatched horror movies which were added more than 90 days ago and have an audience rating less than 8
     for movie in movies.search(
             filters={'unwatched': True, 'genre': 'horror', 'addedAt<<': ninety_days_ago.strftime("%Y-%m-%d"),
-                     'audienceRating<<': 8}):
+                     'audienceRating<<': 7.5}):
         logger.info(
             f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}', "
             f"AddedAt: '{movie.addedAt}', Audience Rating: '{movie.audienceRating}'")
@@ -109,7 +109,7 @@ def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
     if tmdb_results['total_results'] > 0:
         movie_dict = {"file_path": sanitize_file_path(movie.media[0].parts[0].file), "id": movie.ratingKey,
                       "size_bytes": movie.media[0].parts[0].size, "tmdb_results": tmdb_results['results'][0],
-                      "audience_rating": movie.audienceRating}
+                      "audience_rating": movie.audienceRating, "roles": [str(role) for role in movie.roles]}
         if search_key in results_to_store:
             results_to_store[search_key].append(movie_dict)
         else:
