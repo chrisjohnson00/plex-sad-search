@@ -11,6 +11,7 @@ import sad_libraries.redis as sad_redis
 import sad_libraries.tmdb as sad_tmdb
 from plexapi.server import PlexServer
 from plexapi.video import Movie
+from plexapi.library import MovieSection
 
 
 def main():
@@ -42,12 +43,18 @@ def process_message(message_body):
     # message_body will be a list of search keys to execute, if a search key exists, that function will be
     # executed, if "all" is in the list, all will be executed.
     if "all" in message_body:
+        logger.info("Searching for horror_movies")
         search_keys, results_to_store = horror_movies(search_keys=search_keys, results_to_store=results_to_store)
+        logger.info("Searching for lowest_rated_movies")
+        search_keys, results_to_store = lowest_rated_movies(search_keys=search_keys, results_to_store=results_to_store)
     else:
         for search_key in message_body:
             if search_key == "horror_movies":
                 search_keys, results_to_store = horror_movies(search_keys=search_keys,
                                                               results_to_store=results_to_store)
+            if search_key == "lowest_rated_movies":
+                search_keys, results_to_store = lowest_rated_movies(search_keys=search_keys,
+                                                                    results_to_store=results_to_store)
             else:
                 logger.error(f"Could not find a function with the name '{search_key}'")
     sad_redis.save_to_cache(key='sad_search_keys', data=search_keys)
@@ -101,6 +108,33 @@ def horror_movies(*, search_keys: list, results_to_store: dict):
     return search_keys, results_to_store
 
 
+def lowest_rated_movies(*, search_keys: list, results_to_store: dict):
+    """
+    Get all movies with a genre of Horror which are unwatched, added to the library more than 90 days ago
+    :return:
+    """
+    search_key = inspect.currentframe().f_code.co_name
+    # empty the results_to_store dict for this search key
+    if search_key in results_to_store:
+        results_to_store[search_key] = []
+    # Fetch movie library
+    movies = get_movie_library()
+    size = 0
+    count = 0
+    # Lowest rating movies, under 3.5
+    for movie in movies.search(limit=100, sort='audienceRating:asc', filters={'audienceRating<<': 3.5}):
+        logger.info(f"Movie: '{movie.title}', File path: '{sanitize_file_path(movie.media[0].parts[0].file)}', "
+                    f"AddedAt: '{movie.addedAt}', Audience Rating: '{movie.audienceRating}'")
+        size += movie.media[0].parts[0].size  # Increment size with the size of the movie
+        count += 1
+        store_movie(movie=movie, search_key=search_key, results_to_store=results_to_store)
+    size_gb = size / (1024 ** 3)  # convert size to gigabytes
+    logger.info(f"Total size of {search_key}: {size_gb}GB, {count} movies")
+    if search_key not in search_keys:
+        search_keys.append(search_key)
+    return search_keys, results_to_store
+
+
 def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
     tmdb_results = sad_tmdb.search_movie_by_query_and_year(query=movie.title, year=movie.year)
     # tmdb_results comes back with a dict of this format:
@@ -126,7 +160,7 @@ def sanitize_file_path(file_path):
     return relative_path
 
 
-def get_movie_library():
+def get_movie_library() -> MovieSection:
     plex = get_plex_client()
     movies = plex.library.section('Movies')
     return movies
