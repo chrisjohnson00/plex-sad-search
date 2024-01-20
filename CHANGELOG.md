@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.5.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.5.0) (2024-01-20)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.4.1...v0.5.0)
+
+**Implemented enhancements:**
+
+- feat: adding lowest rated movies [\#23](https://github.com/chrisjohnson00/plex-sad-search/pull/23) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
+**Merged pull requests:**
+
+- chore: bump actions/cache from 3.3.3 to 4.0.0 [\#22](https://github.com/chrisjohnson00/plex-sad-search/pull/22) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v0.4.1](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.4.1) (2024-01-14)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.4.0...v0.4.1)
