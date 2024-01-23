@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.6.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.6.0) (2024-01-23)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.5.0...v0.6.0)
+
+**Implemented enhancements:**
+
+- feat: searching for tv shows [\#24](https://github.com/chrisjohnson00/plex-sad-search/pull/24) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v0.5.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.5.0) (2024-01-20)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.4.1...v0.5.0)
