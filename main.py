@@ -10,8 +10,8 @@ import pygogo as gogo
 import sad_libraries.redis as sad_redis
 import sad_libraries.tmdb as sad_tmdb
 from plexapi.server import PlexServer
-from plexapi.video import Movie
-from plexapi.library import MovieSection
+from plexapi.video import Movie, Show
+from plexapi.library import MovieSection, ShowSection
 
 
 def main():
@@ -47,6 +47,8 @@ def process_message(message_body):
         search_keys, results_to_store = horror_movies(search_keys=search_keys, results_to_store=results_to_store)
         logger.info("Searching for lowest_rated_movies")
         search_keys, results_to_store = lowest_rated_movies(search_keys=search_keys, results_to_store=results_to_store)
+        logger.info("Searching for unwatched shows")
+        search_keys, results_to_store = tv_never_watched(search_keys=search_keys, results_to_store=results_to_store)
     else:
         for search_key in message_body:
             if search_key == "horror_movies":
@@ -55,6 +57,9 @@ def process_message(message_body):
             if search_key == "lowest_rated_movies":
                 search_keys, results_to_store = lowest_rated_movies(search_keys=search_keys,
                                                                     results_to_store=results_to_store)
+            if search_key == "tv_never_watched":
+                search_keys, results_to_store = tv_never_watched(search_keys=search_keys,
+                                                                 results_to_store=results_to_store)
             else:
                 logger.error(f"Could not find a function with the name '{search_key}'")
     sad_redis.save_to_cache(key='sad_search_keys', data=search_keys)
@@ -103,8 +108,8 @@ def horror_movies(*, search_keys: list, results_to_store: dict):
         store_movie(movie=movie, search_key=search_key, results_to_store=results_to_store)
     size_gb = size / (1024 ** 3)  # convert size to gigabytes
     logger.info(f"Total size of {search_key}: {size_gb}GB, {count} movies")
-    if search_key not in search_keys:
-        search_keys.append(search_key)
+    if not search_key_in_cache(search_key=search_key, search_keys=search_keys):
+        search_keys.append({'type': 'movie', 'key': search_key})
     return search_keys, results_to_store
 
 
@@ -130,8 +135,30 @@ def lowest_rated_movies(*, search_keys: list, results_to_store: dict):
         store_movie(movie=movie, search_key=search_key, results_to_store=results_to_store)
     size_gb = size / (1024 ** 3)  # convert size to gigabytes
     logger.info(f"Total size of {search_key}: {size_gb}GB, {count} movies")
-    if search_key not in search_keys:
-        search_keys.append(search_key)
+    if not search_key_in_cache(search_key=search_key, search_keys=search_keys):
+        search_keys.append({'type': 'movie', 'key': search_key})
+    return search_keys, results_to_store
+
+
+def tv_never_watched(*, search_keys: list, results_to_store: dict):
+    """
+    Get all movies with a genre of Horror which are unwatched, added to the library more than 90 days ago
+    :return:
+    """
+    search_key = inspect.currentframe().f_code.co_name
+    # empty the results_to_store dict for this search key
+    if search_key in results_to_store:
+        results_to_store[search_key] = []
+    # Fetch movie library
+    tv = get_tv_library()
+    show: Show
+    for show in tv.search(filters={'viewCount': 0, 'unviewedLeafCount>>': 1}):
+        logger.info(
+            f"Show title: {show.title}, view count: {show.viewCount}, season count: {show.childCount}, "
+            f"episode count: {show.leafCount}, viewed episode count: {show.viewedLeafCount}")
+        store_show(show=show, search_key=search_key, results_to_store=results_to_store)
+    if not search_key_in_cache(search_key=search_key, search_keys=search_keys):
+        search_keys.append({'type': 'show', 'key': search_key})
     return search_keys, results_to_store
 
 
@@ -154,6 +181,24 @@ def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
     return results_to_store
 
 
+def store_show(*, show: Show, search_key: str, results_to_store: dict):
+    show_dict = {'id': show.ratingKey, 'title': show.title, 'view_count': show.viewCount,
+                 'season_count': show.childCount,
+                 'episode_count': show.leafCount, 'description': show.summary}
+    if search_key in results_to_store:
+        results_to_store[search_key].append(show_dict)
+    else:
+        results_to_store[search_key] = [show_dict]
+    return results_to_store
+
+
+def search_key_in_cache(*, search_key: str, search_keys: list):
+    for key in search_keys:
+        if key['key'] == search_key:
+            return True
+    return False
+
+
 def sanitize_file_path(file_path):
     directory_to_strip = "/mnt/movies"
     relative_path = os.path.relpath(file_path, start=directory_to_strip)
@@ -164,6 +209,12 @@ def get_movie_library() -> MovieSection:
     plex = get_plex_client()
     movies = plex.library.section('Movies')
     return movies
+
+
+def get_tv_library() -> ShowSection:
+    plex = get_plex_client()
+    tv = plex.library.section('TV Shows')
+    return tv
 
 
 def get_plex_client():
