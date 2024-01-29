@@ -9,9 +9,9 @@ import pulsar
 import pygogo as gogo
 import sad_libraries.redis as sad_redis
 import sad_libraries.tmdb as sad_tmdb
+from plexapi.library import MovieSection, ShowSection
 from plexapi.server import PlexServer
 from plexapi.video import Movie, Show
-from plexapi.library import MovieSection, ShowSection
 
 
 def main():
@@ -49,21 +49,32 @@ def process_message(message_body):
         search_keys, results_to_store = lowest_rated_movies(search_keys=search_keys, results_to_store=results_to_store)
         logger.info("Searching for unwatched shows")
         search_keys, results_to_store = tv_never_watched(search_keys=search_keys, results_to_store=results_to_store)
+        sad_redis.save_to_cache(key='sad_search_keys', data=search_keys)
+        sad_redis.save_to_cache(key='sad_results', data=results_to_store)
     else:
         for search_key in message_body:
-            if search_key == "horror_movies":
-                search_keys, results_to_store = horror_movies(search_keys=search_keys,
-                                                              results_to_store=results_to_store)
-            if search_key == "lowest_rated_movies":
-                search_keys, results_to_store = lowest_rated_movies(search_keys=search_keys,
+            search_keys, results_to_store = execute_search_function(search_key=search_key, search_keys=search_keys,
                                                                     results_to_store=results_to_store)
-            if search_key == "tv_never_watched":
-                search_keys, results_to_store = tv_never_watched(search_keys=search_keys,
-                                                                 results_to_store=results_to_store)
-            else:
-                logger.error(f"Could not find a function with the name '{search_key}'")
-    sad_redis.save_to_cache(key='sad_search_keys', data=search_keys)
-    sad_redis.save_to_cache(key='sad_results', data=results_to_store)
+            sad_redis.save_to_cache(key='sad_search_keys', data=search_keys)
+            sad_redis.save_to_cache(key='sad_results', data=results_to_store)
+
+
+def execute_search_function(*, search_key, search_keys, results_to_store):
+    search_functions = {
+        "horror_movies": horror_movies,
+        "lowest_rated_movies": lowest_rated_movies,
+        "tv_never_watched": tv_never_watched
+    }
+
+    # Get the function corresponding to the search_key
+    search_function = search_functions.get(search_key)
+
+    if search_function:
+        search_keys, results_to_store = search_function(search_keys=search_keys, results_to_store=results_to_store)
+    else:
+        logger.error(f"Could not find a function with the name '{search_key}'")
+
+    return search_keys, results_to_store
 
 
 def refresh_from_cache():
