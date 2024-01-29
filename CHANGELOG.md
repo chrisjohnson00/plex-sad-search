@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.6.1](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.6.1) (2024-01-29)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.6.0...v0.6.1)
+
+**Merged pull requests:**
+
+- refactor: simplify search key processing, lib update [\#26](https://github.com/chrisjohnson00/plex-sad-search/pull/26) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v0.6.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.6.0) (2024-01-23)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.5.0...v0.6.0)
