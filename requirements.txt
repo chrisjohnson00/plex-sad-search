@@ -8,4 +8,4 @@ pygogo==1.3.0
 redis==5.0.1
 requests==2.31.0
 sad_libraries @ git+https://github.com/chrisjohnson00/plex-sad-libraries.git@7e31a8fb75ff35f2b0636cf50914d3ffe35411b9
-urllib3==2.1.0
+urllib3==2.2.0
