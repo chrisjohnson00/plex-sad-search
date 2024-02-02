@@ -8,7 +8,7 @@
 docker run -it --rm -v ${PWD}:/app -w /app python:3.10-slim bash
 apt update && apt install -y git
 pip install --upgrade pip
-pip install --upgrade plexapi pulsar-client pygogo 'sad_libraries@git+https://github.com/chrisjohnson00/plex-sad-libraries.git@tv-search'
+pip install --upgrade plexapi pulsar-client pygogo 'sad_libraries@git+https://github.com/chrisjohnson00/plex-sad-libraries.git'
 pip freeze > requirements.txt
 ```
 

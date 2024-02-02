@@ -7,5 +7,5 @@ pulsar-client==3.4.0
 pygogo==1.3.0
 redis==5.0.1
 requests==2.31.0
-sad_libraries @ git+https://github.com/chrisjohnson00/plex-sad-libraries.git@tv-search
+sad_libraries @ git+https://github.com/chrisjohnson00/plex-sad-libraries.git@5300abeb542ca582c9d79bc5ffa285d891dc1489
 urllib3==2.2.0
