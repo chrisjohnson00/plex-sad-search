@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.7.0](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.7.0) (2024-02-02)
+
+[Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.6.1...v0.7.0)
+
+**Implemented enhancements:**
+
+- feat: adding tv metadata from tmdb [\#29](https://github.com/chrisjohnson00/plex-sad-search/pull/29) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v0.6.1](https://github.com/chrisjohnson00/plex-sad-search/tree/v0.6.1) (2024-01-29)
 
 [Full Changelog](https://github.com/chrisjohnson00/plex-sad-search/compare/v0.6.0...v0.6.1)
