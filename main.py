@@ -193,13 +193,20 @@ def store_movie(*, movie: Movie, search_key: str, results_to_store: dict):
 
 
 def store_show(*, show: Show, search_key: str, results_to_store: dict):
-    show_dict = {'id': show.ratingKey, 'title': show.title, 'view_count': show.viewCount,
-                 'season_count': show.childCount,
-                 'episode_count': show.leafCount, 'description': show.summary}
-    if search_key in results_to_store:
-        results_to_store[search_key].append(show_dict)
+    tmdb_results = sad_tmdb.search_tv_by_title(title=show.title)
+    # tmdb_results comes back with a dict of this format:
+    # {'page': 1, 'results': [], 'total_pages': 1, 'total_results': 0}
+    if tmdb_results['total_results'] > 0:
+        show_dict = {'id': show.ratingKey, 'title': show.title, 'view_count': show.viewCount,
+                     'season_count': show.childCount,
+                     'episode_count': show.leafCount, 'description': show.summary,
+                     "tmdb_results": tmdb_results['results'][0]}
+        if search_key in results_to_store:
+            results_to_store[search_key].append(show_dict)
+        else:
+            results_to_store[search_key] = [show_dict]
     else:
-        results_to_store[search_key] = [show_dict]
+        logger.error(f"TMDB API did not return any results for '{show.title}")
     return results_to_store
 
 
